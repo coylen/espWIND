@@ -19,11 +19,13 @@ class NASA:
         self.packet_size = 0
         self.data = []
         self.output = []
+        self.fail = 0
 
     def update(self):
         try:
             self.receive()
             self.decode()
+            self.fail = 0
         except NASAException:
             self.output.append(ERR(self._I2Cerror).msg)
             #self.I2C.init(pyb.I2C.SLAVE, addr=0x3e) #TODO hack?
@@ -34,6 +36,7 @@ class NASA:
             #self.pin.value(self.pin_value)
             self.data = self.I2C.read(self.packet_size)
         except OSError:
+            self.fail +=1
             raise NASAException(self._I2Cerror)
 
     # template for process function of specific class
@@ -76,5 +79,5 @@ class NASA:
                 position = pl + (bl-x-1)*8 + 4
         if count != 1:
             raise ValueError()
-        return position
+        return position - 1
 

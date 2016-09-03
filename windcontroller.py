@@ -2,12 +2,7 @@
 
 from NasaWind import NASAWind
 from time import sleep
-
-def setup():
-    import network
-    wlan=network.WLAN(network.STA_IF)
-    wlan.active(True)
-    wlan.connect('Jambo','')
+import machine
 
 def connect():
     import socket
@@ -26,6 +21,8 @@ def run(test=False):
             s.send(nw.output)
             nw.output = []
         except:
+            if nw.fail > 10:
+                machine.reset()
             pass
         finally:
             s.close()
